@@ -55,6 +55,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Run Black
         uses: psf/black@stable
+        with:
+          # Install the black version in pyproject.toml, not the latest release.
+          use_pyproject: true
 
   ruff:
     name: Check Code Style with Ruff
@@ -71,6 +74,7 @@ jobs:
         # rule set turns unrelated PRs red with no change on our side (0.16.0
         # did exactly that). Bump this deliberately, with the resulting
         # findings burned down in the same or a follow-up PR.
+        # Keep in sync with required-version in pyproject.toml.
         run: pip3 install ruff==0.16.0
       - name: Install reviewdog
         uses: reviewdog/action-setup@e04ffabe3898a0af8d0fb1af00c188831c4b5893
@@ -79,6 +83,8 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REVIEWDOG_REPORTER: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'github-check' }}
           REVIEWDOG_FILTER_MODE: ${{ github.event_name == 'pull_request' && 'diff_context' || 'nofilter' }}
+        # -fail-level=any: ruff reports every finding as WARNING, so the old
+        # -fail-on-error (error level for github-check) never failed on push.
         run: |
           ruff check . \
             --output-format=rdjson \
@@ -89,4 +95,4 @@ jobs:
             -name="ruff" \
             -reporter="${REVIEWDOG_REPORTER}" \
             -filter-mode="${REVIEWDOG_FILTER_MODE}" \
-            -fail-on-error=true
+            -fail-level=any

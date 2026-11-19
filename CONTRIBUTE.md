@@ -93,12 +93,14 @@ pip install -e .
 AITER uses `pre-commit` to maintain code quality. Install it before making changes:
 
 ```bash
-pip install black==26.3.0 ruff==0.15.7
+pip install black==26.10.1 ruff==0.16.0
 apt install clang-format-18
 
 # Install pre-commit hooks
 bash ./.githooks/install
 ```
+
+These are the versions that CI uses. `required-version` in `pyproject.toml` sets them, and black or ruff stops with an error if the installed version is different.
 
 This will automatically:
 * Format Python code with `black`
@@ -108,14 +110,14 @@ This will automatically:
 
 ### Manual Linting
 
-To manually run linters:
+To manually run linters (CI checks the full repository):
 
 ```bash
 # Python formatting
-black aiter/ op_tests/
+black .
 
 # Python linting
-ruff check aiter/ op_tests/
+ruff check .
 
 # C++/HIP formatting
 find csrc/ -name "*.cu" -o -name "*.h" -o -name "*.cpp" | xargs clang-format-18 -i

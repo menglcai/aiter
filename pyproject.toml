@@ -19,14 +19,19 @@ requires = [
 #
 # No `select`/`ignore` override on purpose: the rule set stays exactly ruff's
 # default for the pinned version, so this file changes no verdict today. It only
-# makes the inputs explicit. Bumping ruff in .github/workflows/pre-checks.yaml is
-# now the one reviewable place where the rule set can move.
+# makes the inputs explicit. Bumping ruff (here and in
+# .github/workflows/pre-checks.yaml) is the one reviewable place where the rule
+# set can move.
 
 # Not derivable from this file: there is no [project] table, so ruff cannot read
 # `requires-python` and would fall back to its own default. Keep this in sync
 # with `python_requires` in setup.py. py310 is what ruff already resolved to, so
 # the UP0xx (PEP 585/604) verdicts are unchanged.
 target-version = "py310"
+
+# A local ruff that is not the CI version stops with an error, instead of
+# giving a different verdict. Keep in sync with the pin in pre-checks.yaml.
+required-version = "==0.16.0"
 
 # ruff's built-in exclude list contains the bare name `dist`, and a pattern with
 # no slash is matched against the basename at any depth -- so it silently skipped
@@ -94,6 +99,9 @@ filterwarnings = [
 ]
 
 [tool.black]
+# CI reads this version (psf/black `use_pyproject`), and a local black that is
+# not this version stops with an error.
+required-version = "26.10.1"
 # Same reason as ruff's `.claude` exclude above: narrowing .gitignore made the bot's tooling
 # visible to the formatter for the first time, and reformatting it is not this change.
 extend-exclude = '''
